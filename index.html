@@ -3,22 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LLM Compiler</title>
-    <link rel="stylesheet" href="style.css">
+    <title>AI Code Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
+    <div class="container">
+        <h1>AI Code Generator</h1>
+        <form id="codeForm">
+            <label for="prompt">Enter your prompt:</label>
+            <input type="text" id="prompt" name="prompt" required>
+            <button type="submit">Generate Code</button>
+        </form>
+        <div id="output">
+            <h2>Generated Code:</h2>
+            <pre id="codeOutput"></pre>
+        </div>
+    </div>
 
-<h1>LLM Comparison Dashboard</h1>
-
-<textarea id="prompt" placeholder="Enter your prompt here..."></textarea>
-<button onclick="Compare()">Compare Models</button>
-
-<div id="results">
-<div><h3>OpenAI</h3><pre id = "openai"></pre></div>
-<div><h3>Claude</h3><pre id = "claude"></pre></div>
-<div><h3>Gemini</h3><pre id = "gemini"></pre></div>
-</div>
-
-<script src="script.js"></script>
+    <script>
+        document.getElementById('codeForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const prompt = document.getElementById('prompt').value;
+            fetch('/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ prompt: prompt }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('codeOutput').textContent = data.code;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('codeOutput').textContent = 'An error occurred while generating code.';
+            });
+        });
+    </script>
 </body>
 </html>
